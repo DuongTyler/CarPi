@@ -25,32 +25,28 @@ int main(int argc, char** argv){
 	clearLCD(handle);
 	lcdPuts(handle, "Pi Car Mod      by: Tyler Duong");		//output init
 */	system("sleep 1");						//wait to see init
-//	for ( int i = 0; i < 30; i++ )
-//	{
 
-//		if()
-//		{
-			system("bash /home/nimda/git/CarPi/scripts/startPlaying.sh");
-			system("ncmpcpp --current-song='%f' |awk -F '.mp3' '{print $1}' 2> /tmp/myfile");	//output current playing to tmp file
-//		}
-//		else
-//		{
-//			system("echo 'No Songs Playing' > /tmp/myfile");
-//		}
-		/*debug*/std::cout<<">> executed ncmpcpp command"<<std::endl;
-		FILE *file = fopen("/tmp/myfile","r");			//open to read
-		/*debug*/std::cout<<">> opened ifstream"<<std::endl;
-		char fileContent[33];					//assign contents to fileContent
-		fgets(fileContent, 33,file);				//close file	
-		fclose(file);		
-	//	clearLCD(handle);
-	//	lcdPosition(handle,0,0);				//resets position lcd stream
-		std::cout<<fileContent<<std::endl;			//for debugging
-	//	clearLCD(handle);
-	//	lcdPuts(handle, fileContent);				//output to lcd
-		/*debug*/std::cout<<">> printed to lcd"<<std::endl;
 
-//	}
+
+	system("bash /home/nimda/git/CarPi/scripts/play.sh");
+	system("ncmpcpp --current-song={'%f'} |awk -F '.mp3' '{print $1}' > /tmp/myfile");	//output current playing to tmp file
+	/*debug*/std::cout<<">> executed ncmpcpp command"<<std::endl;
+
+
+
+	FILE *file = fopen("/tmp/myfile","r");			//open to read
+	/*debug*/std::cout<<">> opened ifstream"<<std::endl;
+	char fileContent[33];					//assign contents to fileContent
+	fgets(fileContent, 33,file);				//close file	
+	fclose(file);		
+
+//	clearLCD(handle);
+//	lcdPosition(handle,0,0);				//resets position lcd stream
+	std::cout<<fileContent<<std::endl;			//for debugging
+//	clearLCD(handle);
+//	lcdPuts(handle, fileContent);				//output to lcd
+	/*debug*/std::cout<<">> printed to lcd"<<std::endl;
+
 	return 0;
 }
 
