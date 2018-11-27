@@ -2,7 +2,9 @@
 
 ncmpcpp --screen=playlist << EOF
 
-\r
+c
+y
+
 q
 
 EOF
