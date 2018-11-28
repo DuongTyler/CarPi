@@ -63,7 +63,36 @@ int getInput(){
 }
 #endif
 
+
+/*
+class Song 
+{
+	public:
+		char [] title;
+		bool isPlaying;
+		Song( char[] tt, bool np){
+			
+			title = tt;
+			isPlaying = np;
+			
+		}
+		
+
+};
+*/
+
+
+
+
+
+
+
 int main(int argc, char** argv){
+
+
+//	Song test = new Song("songname", false);
+//	std::cout<< test.title << std::endl;
+//	delete test;
 
 #ifdef PI
 //========================== BEGIN INITIALIZING LCD =================================================
