@@ -1,6 +1,6 @@
 
 #define DEBUG
-//#define PI
+#define PI
 
 
 #include <stdio.h>
@@ -32,7 +32,7 @@
 
 
 #ifdef PI
-void lcdPrint (int handle, char [] msg){
+void lcdPrint (int handle, char msg[]){
 
 	lcdPosition(handle,0,0);							//resets position lcd stream
 	lcdPuts(handle, "                                                                ");	//clear screen
@@ -109,7 +109,8 @@ int main(int argc, char** argv){
 
 
 //=========================== BEGIN PRINTING LOADING MESSAGE ========================================
-	lcdPrint(handle, "Pi Car Mod      by: Tyler Duong");		//output loading screen
+	char temp[] = "Pi Car Mod      by: Tyler Duong";
+	lcdPrint(handle, temp);		//output loading screen
 //================================ END PRINT ========================================================
 #endif
 
@@ -117,7 +118,7 @@ int main(int argc, char** argv){
 
 
 //========================== BEGIN CALLS TO SCRIPTS =================================================
-	system("bash /home/nimda/git/CarPi/scripts/play.sh");
+	system("bash ~/git/CarPi/scripts/play.sh");
 	system("ncmpcpp --current-song={'%f'} |awk -F '.mp3' '{print $1}' > /tmp/myfile");	//output current playing to tmp file
 	#ifdef DEBUG
 		std::cout<<">> Scripts Completed"<<std::endl;
