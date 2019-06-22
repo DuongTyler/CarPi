@@ -1,6 +1,9 @@
+	/***MEMO***/
 //compile with g++/gcc and link mpdclient with -lmpdclient
+//use -g to debug with gdb
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <mpd/client.h>
 
@@ -23,6 +26,7 @@ int main(void)
 		char command;
 		printf("Send Command: ");
 		scanf("%c", &command);
+		if (m_connection != NULL) free(m_connection);	//TODO: FIX MEMORY LEAK, there are a LOT
 		m_connection = mpd_connection_new(NULL, 0, 30000);
 
 
