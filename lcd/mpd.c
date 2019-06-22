@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <mpd/client.h>
 
+#define DEBUG true
+
 int main(void) 
 {
 	struct mpd_connection* m_connection = NULL;
@@ -32,31 +34,37 @@ int main(void)
         		mpd_connection_free(m_connection);
 			m_connection = NULL;
 		}
-
+#ifdef DEBUG
 		printf("\033[0;32m>>ENTER Switch\033[0m\n");
+#endif
 		switch(command)
 		{
 			case 'p':
+#ifdef DEBUG
 				printf("\033[0;33mSending Pause/Play\033[0m\n");
+#endif
 				mpd_send_toggle_pause(m_connection);
 				break;
 
 			default:
-				while(getchar() != '\n');	//do not get newline
+				while(getchar() != '\n');	//flush the stream
 				printf("\n\033[0;31mInvalid Command\033[0m\n");
 				continue;
 		}
+#ifdef DEBUG
 		printf("\033[0;32m>>EXIT Switch\033[0m\n");
+#endif
 
 
+#ifdef DEBUG
 		printf("\033[0;32m>>GET mpd_recv_status\033[0m\n");
+#endif
 		m_status = mpd_recv_status(m_connection);
+#ifdef DEBUG
 		printf("\033[0;32m>>GOT mpd_recv_status\033[0m\n");
-
 		printf("Status Code: %d\n", mpd_status_get_state(m_status));
-		
-//		mpd_run_current_song(m_connection);
 		printf("\033[0;32m>>GET mpd_status_get_state\033[0m\n");
+#endif
 		switch(mpd_status_get_state(m_status))
 		{
 			case MPD_STATE_PLAY:
@@ -72,22 +80,23 @@ int main(void)
 				m_state_str = "FAILED";
 				break;
 		}
+#ifdef DEBUG
 		printf("\033[0;32m>>GOT mpd_status_get_state\033[0m\n");
+#endif
 		
 
 		/*** Print MPD status ***/
 		printf("\033[0;34mMPD state: %s\033[0m\n", m_state_str);
 
-
 //		char *path = "/home/nimda/Music/80s/Through_the_Fire.mp3";
 //		mpd_send_add(m_connection, path);
 
 		/*** mpd_recv_song ***/
-		//printf("\033[0;32m>>GET mpd_recev_song\033[0m\n");
-		//song = mpd_recv_song(m_connection);	//don't segfault
-		//printf("\033[0;32m>>GOT mpd_recev_song\033[0m\n");
+		printf("\033[0;32m>>GET mpd_recev_song\033[0m\n");
+		song = mpd_recv_song(m_connection);	//don't segfault
+		printf("\033[0;32m>>GOT mpd_recev_song\033[0m\n");
 
-//		sleep(1);
+//		sleep(1);	
 		while(getchar() != '\n');	//flush the input stream
 		mpd_status_free(m_status);
 	
