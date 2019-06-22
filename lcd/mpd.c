@@ -87,7 +87,7 @@ int main(void)
 		//song = mpd_recv_song(m_connection);	//don't segfault
 		//printf("\033[0;32m>>GOT mpd_recev_song\033[0m\n");
 
-		sleep(1);
+//		sleep(1);
 		while(getchar() != '\n');	//flush the input stream
 		mpd_status_free(m_status);
 	
