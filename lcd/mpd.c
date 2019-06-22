@@ -26,8 +26,6 @@ int main(void)
 		m_connection = mpd_connection_new(NULL, 0, 30000);
 
 
-//		printf("IDLE: %d\n", mpd_recv_idle(m_connection, false));
-
 		if (mpd_connection_get_error(m_connection) != MPD_ERROR_SUCCESS)
 		{
 			fprintf(stderr, "\033[0;31mCould not connect to MPD: %s\033[0m\n", mpd_connection_get_error_message(m_connection));
@@ -47,7 +45,7 @@ int main(void)
 				break;
 			case 'q':
 				printf("EXITING\n");
-				if ( m_status != NULL ) mpd_status_free(m_status);	//causes segfault
+				if ( m_status != NULL ) mpd_status_free(m_status);	//TODO: Fix double free thingy
 				return 0;
 
 			default:
@@ -66,7 +64,7 @@ int main(void)
 		m_status = mpd_recv_status(m_connection);
 #ifdef DEBUG
 		printf("\033[0;32m>>GOT mpd_recv_status\033[0m\n");
-		printf("Status Code: %d\n", mpd_status_get_state(m_status));
+		printf("MPD Status Code: %d\n", mpd_status_get_state(m_status));
 		printf("\033[0;32m>>GET mpd_status_get_state\033[0m\n");
 #endif
 		switch(mpd_status_get_state(m_status))
@@ -118,3 +116,6 @@ int main(void)
 //		printf("\033[0;32m>>GET mpd_recev_song\033[0m\n");
 //		song = mpd_recv_song(m_connection);	//useless?
 //		printf("\033[0;32m>>GOT mpd_recev_song\033[0m\n");
+//
+	/*IDK, Might be useful*/
+//		printf("IDLE: %d\n", mpd_recv_idle(m_connection, false));
