@@ -95,7 +95,7 @@ int main(void)
 		printf("\033[0;34mMPD state: %s\033[0m\n", m_state_str);
 
 		while(getchar() != '\n');	//flush the input stream
-		//mpd_status_free(m_status);
+		mpd_status_free(m_status);
 	
 	}
 	return 0;
