@@ -19,16 +19,15 @@ int main(void)
 
 	printf("\033[0;33mConnecting to Music Player Daemon...\033[0m\n");
 
-//	m_connection = mpd_connection_new(NULL, 0, 30000);
+	m_connection = mpd_connection_new(NULL, 0, 30000);
 
 	while (1)
 	{
 		char command;
 		printf("Send Command: ");
 		scanf("%c", &command);
-		if (m_connection != NULL) free(m_connection);	//TODO: FIX MEMORY LEAK, there are a LOT
-		m_connection = mpd_connection_new(NULL, 0, 30000);
-
+	//	if (m_connection != NULL) free(m_connection);	//TODO: FIX MEMORY LEAK, there are a LOT
+	//	m_connection = mpd_connection_new(NULL, 0, 30000);
 
 		if (mpd_connection_get_error(m_connection) != MPD_ERROR_SUCCESS)
 		{
@@ -50,6 +49,7 @@ int main(void)
 			case 'q':
 				printf("EXITING\n");
 				if ( m_status != NULL ) mpd_status_free(m_status);	//TODO: Fix double free thingy
+				if ( m_connection != NULL ) mpd_connection_free(m_connection);	//TODO: Fix double free thingy
 				return 0;
 
 			default:
@@ -95,7 +95,7 @@ int main(void)
 		printf("\033[0;34mMPD state: %s\033[0m\n", m_state_str);
 
 		while(getchar() != '\n');	//flush the input stream
-		mpd_status_free(m_status);
+		//mpd_status_free(m_status);
 	
 	}
 	return 0;
