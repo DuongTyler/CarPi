@@ -61,13 +61,13 @@ int main(void)
 #ifdef DEBUG
 		printf("\033[0;32m>>GET mpd_recv_status\033[0m\n");
 #endif
-		m_status = mpd_recv_status(m_connection);
+		m_status = mpd_recv_status(m_connection);	//TODO: fix wrong values returned by mpd_recv_status()
 #ifdef DEBUG
 		printf("\033[0;32m>>GOT mpd_recv_status\033[0m\n");
 		printf("MPD Status Code: %d\n", mpd_status_get_state(m_status));
 		printf("\033[0;32m>>GET mpd_status_get_state\033[0m\n");
 #endif
-		switch(mpd_status_get_state(m_status))
+		switch(mpd_status_get_state(m_status))		//TODO: Fix mpd state to actually be useful
 		{
 			case MPD_STATE_PLAY:
 				m_state_str = "playing";
