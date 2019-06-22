@@ -45,6 +45,10 @@ int main(void)
 #endif
 				mpd_send_toggle_pause(m_connection);
 				break;
+			case 'q':
+				printf("EXITING\n");
+				if ( m_status != NULL ) mpd_status_free(m_status);	//causes segfault
+				return 0;
 
 			default:
 				while(getchar() != '\n');	//flush the stream
@@ -88,18 +92,29 @@ int main(void)
 		/*** Print MPD status ***/
 		printf("\033[0;34mMPD state: %s\033[0m\n", m_state_str);
 
-//		char *path = "/home/nimda/Music/80s/Through_the_Fire.mp3";
-//		mpd_send_add(m_connection, path);
-
-		/*** mpd_recv_song ***/
-		printf("\033[0;32m>>GET mpd_recev_song\033[0m\n");
-		song = mpd_recv_song(m_connection);	//don't segfault
-		printf("\033[0;32m>>GOT mpd_recev_song\033[0m\n");
-
-//		sleep(1);	
 		while(getchar() != '\n');	//flush the input stream
 		mpd_status_free(m_status);
 	
 	}
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+/*SAVE FOR LATER*/
+
+	/*Add a new song to the playlist*/
+//		char *path = "/home/nimda/Music/80s/Through_the_Fire.mp3";
+//		mpd_send_add(m_connection, path);
+	/*Recieve MPD SONG*/
+//		printf("\033[0;32m>>GET mpd_recev_song\033[0m\n");
+//		song = mpd_recv_song(m_connection);	//useless?
+//		printf("\033[0;32m>>GOT mpd_recev_song\033[0m\n");
