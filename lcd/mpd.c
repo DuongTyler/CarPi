@@ -7,93 +7,89 @@
 #include <unistd.h>
 #include <mpd/client.h>
 
-#define DEBUG true
+#define DEBUG 1
 
-int main(void) 
-{
-	struct mpd_connection* m_connection = NULL;
-	struct mpd_status* m_status = NULL;
-	struct mpd_song *song;
-
-	char *m_state_str = "\033[0;31mERR\033[0m";
-
-	printf("\033[0;33mConnecting to Music Player Daemon...\033[0m\n");
-	m_connection = mpd_connection_new(NULL, 0, 30000);	//establish a connection to the MP Daemon
-
-	while (1)
-	{
-		char command;
-		printf("Send Command: ");
-		scanf("%c", &command);
-
-		if (mpd_connection_get_error(m_connection) != MPD_ERROR_SUCCESS)
-		{
-			fprintf(stderr, "\033[0;31mCould not connect to MPD: %s\033[0m\n", mpd_connection_get_error_message(m_connection));
-        		mpd_connection_free(m_connection);
-			m_connection = NULL;
-		}
 #ifdef DEBUG
-		printf("\033[0;32m>>ENTER Switch\033[0m\n");
+#define dbgprint(...) printf(__VA_ARGS__)
+#else
+#define dbgprint(...)
 #endif
-		switch(command)
+
+#define ESC "\033"
+#define DISP_NORM  ESC"[0m"
+#define DISP_RED   ESC"[0;31m"
+#define DISP_GREEN ESC"[0;32m"
+#define DISP_BROWN ESC"[0;33m"
+#define DISP_BLUE  ESC"[0;34m"
+
+int main()
+{
+	struct mpd_connection	*m_connection;
+	struct mpd_status	*m_status;
+	struct mpd_song 	*song;
+
+	/***CONNECT TO DAEMON***/
+	printf( DISP_BROWN"Connecting to Music Player Daemon..."DISP_NORM"\n" );
+	m_connection = mpd_connection_new( NULL, 0, 30000 );
+	printf( DISP_GREEN"Connection Suceeded"DISP_NORM"\n" );
+
+	while ( 1 )
+	{
+		/***HANDLE DISCONNECTION***/
+		if ( mpd_connection_get_error(m_connection) != MPD_ERROR_SUCCESS )
+		{
+			fprintf( stderr, DISP_RED"Could not connect to MPD: %s"DISP_NORM"\n", 
+					mpd_connection_get_error_message( m_connection ));
+        		mpd_connection_free( m_connection );
+			m_connection = NULL;
+			return 1;
+		}
+
+		/***VARIABLES***/
+		char *m_state_str;
+		char command;
+
+		/***GET INPUT FROM USER***/		
+		printf(	"Send Command: ");
+		scanf(	"%c", &command	);
+		
+		dbgprint( DISP_GREEN">>ENTER Switch"DISP_NORM"\n" );
+		switch( command )
 		{
 			case 'p':
-#ifdef DEBUG
-				printf("\033[0;33mSending Pause/Play\033[0m\n");
-#endif
-				mpd_send_toggle_pause(m_connection);
+				dbgprint( DISP_GREEN"Sending Pause/Play"DISP_NORM"\n" );
+				mpd_send_toggle_pause( m_connection );
 				break;
 			case 'q':
-				printf("EXITING\n");	
-				if ( m_status != NULL ) mpd_status_free(m_status);		//TODO: Fix double free thingy
-				if ( m_connection != NULL ) mpd_connection_free(m_connection);	//TODO: Fix double free thingy
+				printf( "EXITING\n" );	
+				if ( m_connection != NULL ) 	mpd_connection_free(m_connection);
 				return 0;
 
 			default:
-				while(getchar() != '\n');	//flush the stream
-				printf("\n\033[0;31mInvalid Command\033[0m\n");
+				while( getchar() != '\n' );	//flush stream
+				printf( DISP_RED"Invalid Command"DISP_NORM"\n" );
 				continue;
 		}
-#ifdef DEBUG
-		printf("\033[0;32m>>EXIT Switch\033[0m\n");
-#endif
 
+		/***UPDATE THE STATUS***/
+		dbgprint( DISP_BROWN">>GET mpd_recv_status"DISP_NORM"\n" );
+		m_status = mpd_recv_status( m_connection );	//TODO: fix wrong values returned by mpd_recv_status()
 
-#ifdef DEBUG
-		printf("\033[0;32m>>GET mpd_recv_status\033[0m\n");
-#endif
-		m_status = mpd_recv_status(m_connection);	//TODO: fix wrong values returned by mpd_recv_status()
-#ifdef DEBUG
-		printf("\033[0;32m>>GOT mpd_recv_status\033[0m\n");
-		printf("MPD Status Code: %d\n", mpd_status_get_state(m_status));
-		printf("\033[0;32m>>GET mpd_status_get_state\033[0m\n");
-#endif
-		switch(mpd_status_get_state(m_status))		//TODO: see mpd_recv_status() todo
+		dbgprint( DISP_BROWN">>GET mpd_status_get_state\n"DISP_NORM );
+		switch( mpd_status_get_state( m_status ) )		
 		{
-			case MPD_STATE_PLAY:
-				m_state_str = "playing";
-				break;
-			case MPD_STATE_PAUSE:
-				m_state_str = "paused";
-				break;
-			case MPD_STATE_STOP:
-				m_state_str = "stopped";
-				break;
-			default:
-				m_state_str = "FAILED";
-				break;
+			case MPD_STATE_PLAY:	m_state_str = "playing";			break;
+			case MPD_STATE_PAUSE:	m_state_str = "paused";				break;
+			case MPD_STATE_STOP:	m_state_str = "stopped";			break;
+			default:		m_state_str = DISP_RED"FAILED"DISP_NORM;	break;
 		}
-#ifdef DEBUG
-		printf("\033[0;32m>>GOT mpd_status_get_state\033[0m\n");
-#endif
-		
 
-		/*** Print MPD status ***/
-		printf("\033[0;34mMPD state: %s\033[0m\n", m_state_str);
+		/***PRINT MPD STATUS***/
+		dbgprint( DISP_BROWN"MPD state: %s"DISP_NORM"\n", m_state_str );
 
-		while(getchar() != '\n');	//flush the input stream
-		mpd_status_free(m_status);	//free the status struct
-	
+		/***CLEAN UP***/
+		while( getchar() != '\n' );	//flush stream
+		mpd_status_free( m_status );	//free status struct
 	}
 	return 0;
 }
