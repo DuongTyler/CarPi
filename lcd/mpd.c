@@ -15,12 +15,12 @@
 #define dbgprint(...)
 #endif
 
-#define ESC "\033"
-#define DISP_NORM  ESC"[0m"
-#define DISP_RED   ESC"[0;31m"
-#define DISP_GREEN ESC"[0;32m"
-#define DISP_BROWN ESC"[0;33m"
-#define DISP_BLUE  ESC"[0;34m"
+#define ESC		"\033"
+#define RST_TXT		ESC"[0m"
+#define WARN		ESC"[0;31m[!!!] "
+#define STAT_OK		ESC"[0;32m"
+#define NOTIFY		ESC"[0;33m==> "
+#define DISP_BLUE	ESC"[0;34m"
 
 int main()
 {
@@ -29,21 +29,21 @@ int main()
 	struct mpd_song 	*song;
 
 	/***CONNECT TO DAEMON***/
-	printf( DISP_BROWN"Connecting to Music Player Daemon..."DISP_NORM"\n" );
+	printf( NOTIFY"Connecting to Music Player Daemon..."RST_TXT"\n" );
 	m_connection = mpd_connection_new( NULL, 0, 30000 );
-	printf( DISP_GREEN"Connection Suceeded"DISP_NORM"\n" );
 
 	while ( 1 )
 	{
 		/***HANDLE DISCONNECTION***/
 		if ( mpd_connection_get_error(m_connection) != MPD_ERROR_SUCCESS )
 		{
-			fprintf( stderr, DISP_RED"Could not connect to MPD: %s"DISP_NORM"\n", 
+			fprintf( stderr, WARN"Could not connect to MPD: %s"RST_TXT"\n", 
 					mpd_connection_get_error_message( m_connection ));
         		mpd_connection_free( m_connection );
 			m_connection = NULL;
 			return 1;
 		}
+		
 
 		/***VARIABLES***/
 		char *m_state_str;
@@ -53,11 +53,14 @@ int main()
 		printf(	"Send Command: ");
 		scanf(	"%c", &command	);
 		
-		dbgprint( DISP_GREEN">>ENTER Switch"DISP_NORM"\n" );
+		dbgprint( NOTIFY"ENTER Switch"RST_TXT"\n" );
 		switch( command )
 		{
+			case 'a':
+			//	mpd_send_
+				break;
 			case 'p':
-				dbgprint( DISP_GREEN"Sending Pause/Play"DISP_NORM"\n" );
+				dbgprint( NOTIFY"Sending Pause/Play"RST_TXT"\n" );
 				mpd_send_toggle_pause( m_connection );
 				break;
 			case 'q':
@@ -67,25 +70,32 @@ int main()
 
 			default:
 				while( getchar() != '\n' );	//flush stream
-				printf( DISP_RED"Invalid Command"DISP_NORM"\n" );
+				printf( WARN"Invalid Command"RST_TXT"\n" );
 				continue;
 		}
 
 		/***UPDATE THE STATUS***/
-		dbgprint( DISP_BROWN">>GET mpd_recv_status"DISP_NORM"\n" );
-		m_status = mpd_recv_status( m_connection );	//TODO: fix wrong values returned by mpd_recv_status()
+		dbgprint( NOTIFY"GET mpd_run_status"RST_TXT"\n" );
+		//m_status = mpd_recv_status( m_connection );	//TODO: fix wrong values returned by mpd_recv_status()
+		m_status = mpd_run_status( m_connection );	//TODO: fix wrong values returned by mpd_recv_status()
+		
+		if(m_status == NULL)	
+		{
+			dbgprint(WARN"NULL POINTER"RST_TXT"\n");
+			dbgprint(NOTIFY"MPD: %s\n",mpd_connection_get_error_message(m_connection));
+		}
 
-		dbgprint( DISP_BROWN">>GET mpd_status_get_state\n"DISP_NORM );
+		dbgprint( NOTIFY"GET mpd_status_get_state"RST_TXT"\n" );
 		switch( mpd_status_get_state( m_status ) )		
 		{
-			case MPD_STATE_PLAY:	m_state_str = "playing";			break;
-			case MPD_STATE_PAUSE:	m_state_str = "paused";				break;
-			case MPD_STATE_STOP:	m_state_str = "stopped";			break;
-			default:		m_state_str = DISP_RED"FAILED"DISP_NORM;	break;
+			case MPD_STATE_PLAY:	m_state_str = NOTIFY"playing"RST_TXT;	break;
+			case MPD_STATE_PAUSE:	m_state_str = NOTIFY"paused"RST_TXT;	break;
+			case MPD_STATE_STOP:	m_state_str = NOTIFY"stopped"RST_TXT;	break;
+			default:		m_state_str = WARN"FAILED"RST_TXT;	break;
 		}
 
 		/***PRINT MPD STATUS***/
-		dbgprint( DISP_BROWN"MPD state: %s"DISP_NORM"\n", m_state_str );
+		dbgprint( DISP_BLUE"MPD state: %s"RST_TXT"\n", m_state_str );
 
 		/***CLEAN UP***/
 		while( getchar() != '\n' );	//flush stream
