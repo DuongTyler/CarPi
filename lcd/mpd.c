@@ -20,6 +20,7 @@
 #define WARN		ESC"[0;31m[!!!] "
 #define STAT_OK		ESC"[0;32m"
 #define NOTIFY		ESC"[0;33m==> "
+#define INFO		ESC"[0;35m"
 #define DISP_BLUE	ESC"[0;34m"
 
 int main()
@@ -57,7 +58,7 @@ int main()
 		switch( command )
 		{
 			case 'a':
-			//	mpd_send_
+			//	mpd_send_add()
 				break;
 			case 'p':
 				dbgprint( NOTIFY"Sending Pause/Play"RST_TXT"\n" );
@@ -74,11 +75,11 @@ int main()
 				continue;
 		}
 
+		mpd_recv_idle( m_connection , false );	//recieve whatever mpd is returning first before sending another command, prevents crash
 		/***UPDATE THE STATUS***/
 		dbgprint( NOTIFY"GET mpd_run_status"RST_TXT"\n" );
-		//m_status = mpd_recv_status( m_connection );	//TODO: fix wrong values returned by mpd_recv_status()
-		m_status = mpd_run_status( m_connection );	//TODO: fix wrong values returned by mpd_recv_status()
-		
+		//m_status = mpd_recv_status( m_connection );	
+		m_status = mpd_run_status( m_connection );		
 		if(m_status == NULL)	
 		{
 			dbgprint(WARN"NULL POINTER"RST_TXT"\n");
@@ -88,9 +89,9 @@ int main()
 		dbgprint( NOTIFY"GET mpd_status_get_state"RST_TXT"\n" );
 		switch( mpd_status_get_state( m_status ) )		
 		{
-			case MPD_STATE_PLAY:	m_state_str = NOTIFY"playing"RST_TXT;	break;
-			case MPD_STATE_PAUSE:	m_state_str = NOTIFY"paused"RST_TXT;	break;
-			case MPD_STATE_STOP:	m_state_str = NOTIFY"stopped"RST_TXT;	break;
+			case MPD_STATE_PLAY:	m_state_str = INFO"playing"RST_TXT;	break;
+			case MPD_STATE_PAUSE:	m_state_str = INFO"paused"RST_TXT;	break;
+			case MPD_STATE_STOP:	m_state_str = INFO"stopped"RST_TXT;	break;
 			default:		m_state_str = WARN"FAILED"RST_TXT;	break;
 		}
 
