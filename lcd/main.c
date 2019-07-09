@@ -49,13 +49,18 @@ int main()
 		
 		char *m_state_str;
 		char command;
+
 		
 
 		/***GET INPUT FROM USER***/		
+		
 		printf(	"Send Command: ");
 		scanf(	"%c", &command	);
 		
 		dbgprint( DISP_NOTIFY"ENTER Switch with %c"DISP_RST"\n", command );
+
+		mpd_command_list_begin(m_connection, true);
+		
 		switch( command )
 		{
 			//case 'a':	//add
@@ -78,9 +83,6 @@ int main()
 			case 'l':	//list
 				//TODO: Finish list function
 				mpd_send_list_all( m_connection, NULL );
-				entity = mpd_recv_entity( m_connection );
-				printf( "%s\n", "" );
-				mpd_entity_free( entity );
 				break;
 			case 'h': case '?':
 				printf(		"commands:\n"
@@ -94,6 +96,8 @@ int main()
 						"q	Quit\n"
 						);
 				while( getchar() != '\n' );	//flush stream
+				mpd_command_list_end(m_connection);
+				mpd_response_finish(m_connection);
 				continue;
 			case 'q':	//quit
 				printf( "EXITING\n" );	
@@ -103,35 +107,45 @@ int main()
 			default:
 				while( getchar() != '\n' );	//flush stream
 				printf( DISP_WARN"Invalid Command"DISP_RST"\n" );
+				mpd_command_list_end(m_connection);
+				mpd_response_finish(m_connection);
 				continue;
 		}
 
-		mpd_recv_idle( m_connection , false );	//recieve whatever mpd is returning first before sending another command, prevents crash
+		mpd_send_status(m_connection);
+		mpd_send_current_song(m_connection);
 		
-		//mpd_song_get_uri(song);
-
-		//song = mpd_recv_song(m_connection);
-
-		//mpd_song_free(song);
-
-		//mpd_response_next(m_connection);
-		/***DISPLAY PLAYING***/
-		//song = mpd_recv_song(m_connection);
-		//if (song == NULL)
-		//{
-		//	printf(DISP_WARN"NULL SONG"DISP_RST"\n");
-		//	continue;
-		//}
-		//printf("uri: %s\n", mpd_song_get_uri(song));
+		mpd_command_list_end(m_connection);
+		//end of command list
 		
-	//	song = mpd_recv_song( m_connection );
-	//	dbgprint(DISP_WARN"MPD: %s\n",mpd_connection_get_error_message(m_connection));
-	//	printf("%s\n", mpd_song_get_uri(song));
-
+		//for list command
+		while ((entity = mpd_recv_entity(m_connection)) != NULL)
+		{
+			const struct mpd_song *listSong;
+			const struct mpd_directory *dir;
+			const struct mpd_playlist *pl;
+			switch (mpd_entity_get_type(entity))
+			{
+				case MPD_ENTITY_TYPE_SONG:
+					listSong = mpd_entity_get_song(entity);
+					printf("SONG> %s\n", mpd_song_get_uri(listSong));
+					break;
+				case MPD_ENTITY_TYPE_DIRECTORY:
+					dir = mpd_entity_get_directory(entity);
+					printf("DIR> %s\n", mpd_directory_get_path(dir));
+					break;
+				case MPD_ENTITY_TYPE_PLAYLIST:
+					pl = mpd_entity_get_playlist(entity);
+					printf("PL> %s\n", mpd_playlist_get_path(pl));
+					break;
+			}
+			mpd_entity_free(entity);
+		}
+		//goes to next command to send after the switch command sends (send_status)
+		mpd_response_next(m_connection);
+		
 		/***UPDATE THE STATUS***/
-		dbgprint( DISP_NOTIFY"GET mpd_run_status"DISP_RST"\n" );
-		//m_status = mpd_recv_status( m_connection );	
-		m_status = mpd_run_status( m_connection );		
+		m_status = mpd_recv_status( m_connection );	
 		if(m_status == NULL)	
 		{
 			dbgprint(DISP_WARN"NULL m_status"DISP_RST"\n");
@@ -139,7 +153,6 @@ int main()
 			continue;
 		}
 
-		dbgprint( DISP_NOTIFY"GET mpd_status_get_state"DISP_RST"\n" );
 		switch( mpd_status_get_state( m_status ) )		
 		{
 			case MPD_STATE_PLAY:	m_state_str = DISP_PURPLE"playing"DISP_RST;	break;
@@ -151,9 +164,19 @@ int main()
 		/***PRINT MPD STATUS***/
 		dbgprint( DISP_BLUE"MPD state: %s"DISP_RST"\n", m_state_str );
 
+		//go to next command in the list (send_current_song)
+		mpd_response_next(m_connection);
+
+		song = mpd_recv_song(m_connection);
+		printf("Current Song: %s\n", mpd_song_get_uri(song));
+
+		mpd_response_finish(m_connection);
+
 		/***CLEAN UP***/
 		while( getchar() != '\n' );	//flush stream
-		mpd_status_free( m_status );	//free status struct
+		if (m_status != NULL)	mpd_status_free( m_status );
+		if (song != NULL)	mpd_song_free(song);
+//		if (entity != NULL)	mpd_entity_free( entity );
 	}
 	return 0;
 }
