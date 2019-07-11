@@ -173,7 +173,7 @@ int main(int argc, char ** argv) {
 			case MPD_ENTITY_TYPE_PLAYLIST:
 				pl = mpd_entity_get_playlist(entity);
 				printf("playlist: %s\n",
-				       mpd_playlist_get_path(pl));
+				mpd_playlist_get_path(pl));
 				break;
 			}
 
