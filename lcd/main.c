@@ -9,6 +9,8 @@
 #include <string.h>
 #include "commands.h"
 
+#include <signal.h>
+
 //#define DEBUG 1
 
 #ifdef DEBUG
@@ -30,9 +32,11 @@ int main()
 {
 	struct mpd_connection	*m_connection;
 
+	//signal(SIGPIPE, SIG_IGN); //this will cause worse things to happen
+	//signal(SIGINT, m_sigint);
 	/***CONNECT TO DAEMON***/
 	printf( DISP_NOTIFY"Connecting to Music Player Daemon..."DISP_RST"\n" );
-	m_connection = mpd_connection_new( NULL, 0, 30000 );
+	m_connection = mpd_connection_new( NULL, 0, 60000 );
 
 	while ( 1 )
 	{
@@ -43,7 +47,7 @@ int main()
         		mpd_connection_free( m_connection );
 			m_connection = NULL;
 			//return 1;
-			m_connection = mpd_connection_new( NULL, 0, 30000 );
+			m_connection = mpd_connection_new( NULL, 0, 60000 );
 		}
 		
 		char *m_state_str;
@@ -57,28 +61,21 @@ int main()
 		
 		switch( command )
 		{
-			//TODO: Fix 'a' function to not segfault on 'q'
 			case 'a':	m_add( m_connection );			break;	//add song to playing
 			case 'p':	m_play( m_connection );			break;	//pause/play
 			case '>':	m_next( m_connection );			break;	//next
 			case '<':	m_prev( m_connection );			break;	//prev
 			case 'u':	m_update( m_connection );		break;	//update DB, NULL updates whole DB
 			case 'l':	m_list_all( m_connection );		break;	//list, NULL lists whole DB
-			case 'c':	m_list_current( m_connection );	break;	//list queue
-			case 'i':	m_list_queue( m_connection );	break;	//list queue
+			case 'c':	m_list_current( m_connection );		break;	//list queue
+			case 'i':	m_list_queue( m_connection );		break;	//list queue
 			case '+':	m_vol_down( m_connection );		break;	//vol +5
 			case '-':	m_vol_up( m_connection );		break;	//vol -5
-			case 'q':	m_quit( m_connection );		return 0;	//quit
+			case 'q':	m_quit( m_connection );			return 0;	//quit
 					
 			/***Special Commands***/
-			case 'h': case '?':	//help menu
-				m_help();
-				//cleanup(m_connection);	//end command list, finish mpd response, flush instream
-				break;
-			default:		//invalid command
-				printf( DISP_WARN"Invalid Command"DISP_RST"\n" );
-				//cleanup(m_connection);	//end command list, finish mpd response, flush instream
-				break;
+			case 'h': case '?':	m_help();					break;
+			default:	printf( DISP_WARN"Invalid Command"DISP_RST"\n" );	break;
 		}
 		dbgprint("exit switch\n");
 		mpd_response_finish( m_connection );

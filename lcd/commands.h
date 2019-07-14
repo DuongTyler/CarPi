@@ -1,3 +1,22 @@
+//#define DEBUG 1
+
+#ifdef DEBUG
+#define dbgprint(...) printf(__VA_ARGS__)
+#else
+#define dbgprint(...)
+#endif
+
+#define ESC			"\033"
+#define DISP_RST		ESC"[0m"
+#define DISP_WARN		ESC"[0;31m[!!!] "
+#define DISP_GREEN		ESC"[0;32m"
+#define DISP_NOTIFY		ESC"[0;33m==> "
+#define DISP_PURPLE		ESC"[0;35m"
+#define DISP_BLUE		ESC"[0;34m"
+#define DISP_BLINK
+
+
+
 void m_add(struct mpd_connection *conn)
 {
 	mpd_command_list_begin(conn, true);
@@ -84,6 +103,8 @@ void m_list_current(struct mpd_connection *conn)
 
 	printf("%s: %s\n", m_state_str, mpd_song_get_uri(m_song));
 	mpd_response_finish(conn);
+	mpd_song_free(m_song);
+	mpd_status_free(m_status);
 }
 
 void m_vol_up(struct mpd_connection *conn)
@@ -100,11 +121,15 @@ void m_vol_down(struct mpd_connection *conn)
 	mpd_command_list_end(conn);
 }
 
+//void m_sigint(int sig)
+//{
+	//printf("\nWhy'd you have to use SIGINT dammit.\n");
+	//_Exit(1);
+//}
+
 void m_quit(struct mpd_connection *conn)
 {
-	mpd_command_list_begin(conn, true);
-	mpd_send_change_volume(conn, 5);
-	mpd_command_list_end(conn);
+	mpd_connection_free(conn);
 }
 
 void m_help()
@@ -114,11 +139,12 @@ void m_help()
 		"\tp	Pause/Play the current playlist\n"
 		"\t>	Next\n"
 		"\t<	Previous\n"
-		"\tc	List Queue\n"
-		"\t+	Volume Up\n"
-		"\t-	Volume Down\n"
 		"\tu	Update Database\n"
 		"\tl	List Database\n"
+		"\tc	List Current\n"
+		"\ti	List Queue\n"
+		"\t+	Volume Up\n"
+		"\t-	Volume Down\n"
 		"\th	Print this menu\n"
 		"\tq	Quit\n"
 		"\n"
