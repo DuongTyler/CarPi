@@ -76,7 +76,7 @@ int main(int args, char *argv[])
 				printf("Pressed key %d\nValue: %d\n", pin, digitalRead(pin));
 				command = pin;
 				usleep(500000);		//sleep for 0.5 seconds
-				break;
+				//break;
 			}
 		}
 
@@ -97,6 +97,25 @@ int main(int args, char *argv[])
 			default:
 				break;
 		}
+		
+		if (mpd_connection_get_error(m_connection) != MPD_ERROR_SUCCESS) {
+			fprintf(stderr, "Could not connect to MPD: %s\n", mpd_connection_get_error_message(m_connection));
+                        mpd_connection_free(m_connection);
+                        m_connection = NULL;
+                }
+					    
+		m_status = mpd_run_status(m_connection);
+		if (mpd_status_get_state(m_status) == MPD_STATE_PLAY) {
+		        m_state_str = "playing";
+		} else if (mpd_status_get_state(m_status) == MPD_STATE_STOP) {
+		        m_state_str = "stopped";
+		} else if (mpd_status_get_state(m_status) == MPD_STATE_PAUSE) {
+		        m_state_str = "paused";
+		} else {
+		        m_state_str = "unknown";
+		}	
+		printf("MPD state: %s\n", m_state_str);
+		printf("%u%\n", mpd_status_get_volume(m_status));
 
 	}
 
