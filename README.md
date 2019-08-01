@@ -4,13 +4,13 @@ This project is useless for anybody who has an aux cord and a built-in modern me
 
 I will eventually have all the config files available in this repository, with private data expunged of course.
 
-#DEPENDENCIES
+# DEPENDENCIES
 
 dnsmasq
 hostapd
 
 
-#INSTALLATION
+# INSTALLATION
 
-##WIFI ACCESS POINT
+## WIFI ACCESS POINT
 `apt install dnsmasq hostapd`
