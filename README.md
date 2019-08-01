@@ -5,15 +5,11 @@ This project is useless for anybody who has an aux cord and a built-in modern me
 I will eventually have all the config files available in this repository, with private data expunged of course.
 
 # DEPENDENCIES
-```
-dnsmasq
-hostapd
-mpd
-wiringpi
-```
-and
-
-[libmpdclient](https://github.com/MusicPlayerDaemon/libmpdclient)
+- dnsmasq
+- hostapd
+- mpd
+- wiringpi
+- [libmpdclient](https://github.com/MusicPlayerDaemon/libmpdclient)
 
 # INSTALLATION
 Either run the script [TODO]
@@ -88,8 +84,18 @@ Install the libmpdclient and wiringPi packages
 `apt install wiringpi`
 
 follow this github link for the libmpdclient: https://github.com/MusicPlayerDaemon/libmpdclient
+and
 
+## Autologin
+[TODO]
 
+`sudo raspi-config`
+
+Select Boot Options
+
+Allow Auto Login
+
+Exit
 
 
 
