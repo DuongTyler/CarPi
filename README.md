@@ -10,7 +10,7 @@ dnsmasq
 hostapd
 mpd
 wiringpi
-[libmpdclient] (https://github.com/MusicPlayerDaemon/libmpdclient)
+[libmpdclient](https://github.com/MusicPlayerDaemon/libmpdclient)
 
 ```
 
