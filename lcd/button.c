@@ -51,25 +51,25 @@ int main(void)
 
 		mpd_command_list_begin(m_conn, true);
 
-		if (!digitalRead(0))		//vol up
+		if (!digitalRead(0))		//vol down
 		{
 			printf("btn 1\n");
-			mpd_send_change_volume(m_conn, 5);
+			mpd_send_change_volume(m_conn, -5);
 		}
-		else if (!digitalRead(3))	//next
+		else if (!digitalRead(3))	//pause/play
 		{
 			printf("btn 3\n");
-			mpd_send_next(m_conn);
+			mpd_send_toggle_pause(m_conn);
 		}	
-		else if (!digitalRead(4))	//pause/play
+		else if (!digitalRead(4))	//next
 		{
 			printf("btn 4\n");
-			mpd_send_toggle_pause(m_conn);
+			mpd_send_next(m_conn);
 		}
-		else if (!digitalRead(2))	//vol down
+		else if (!digitalRead(2))	//vol up
 		{
 			printf("btn 2\n");
-			mpd_send_change_volume(m_conn, -5);
+			mpd_send_change_volume(m_conn, 5);
 		}
 	
 		
