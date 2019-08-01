@@ -10,9 +10,10 @@ dnsmasq
 hostapd
 mpd
 wiringpi
-[libmpdclient](https://github.com/MusicPlayerDaemon/libmpdclient)
-
 ```
+and
+
+[libmpdclient](https://github.com/MusicPlayerDaemon/libmpdclient)
 
 # INSTALLATION
 Either run the script [TODO]
