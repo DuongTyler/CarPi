@@ -55,6 +55,7 @@ apt -y install mpd
 echo "Installing MPD config"
 cp etc/mpd.conf /etc/mpd.conf
 mkdir /srv/Music
+chown pi:pi /srv/Music
 echo "MPD will read music files from /srv/Music"
 
 echo "=== Pulseaudio Section ==="
@@ -65,6 +66,7 @@ echo "Installing system.pa file"
 cp etc/pulse/system.pa /etc/pulse/system.pa
 
 echo "adding pacmd module loader to .profile"
+echo "pulseaudio --start" >> /home/pi/.profile
 echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1" >> /home/pi/.profile
 
 echo "done!"
