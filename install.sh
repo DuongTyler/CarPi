@@ -86,5 +86,10 @@ ExecStart=
 ExecStart=-/sbin/agetty --autologin pi --noclear %I \$TERM
 EOF
 
+echo "Adding user mpd to pulseaudio access groups"
+useradd -g pulse-access mpd
+useradd -g pulse mpd
+useradd -g audio mpd
+
 echo "done!\nPlease restart the system now to ensure all services function properly"
 #[TODO: install the WIRINGPI option with libmpdclient and button controls]

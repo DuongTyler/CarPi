@@ -97,6 +97,7 @@ Allow Auto Login
 
 Exit
 
-## ADDITIONAL STEPS
-using `raspi-config` force the output of audio to the 3.5mm jack. I'm too lazy to do that by command line right now even though its as simple as copy pasting from the raspi-config bash script
 
+## Finishing up
+
+Make sure to add the mpd user to pulse, pulse-access, and audio groups
