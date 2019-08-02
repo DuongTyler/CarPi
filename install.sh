@@ -40,6 +40,8 @@ mv /etc/sysctl.conf /etc/sysctl.conf.bak
 cp etc/sysctl.conf /etc/sysctl.conf
 
 echo "Enabling and starting hostapd and dnsmasq"
+systemctl unmask hostapd
+systemctl unmask dnsmasq
 systemctl enable hostapd
 systemctl enable dnsmasq
 systemctl start hostapd
@@ -56,8 +58,14 @@ mkdir /srv/Music
 echo "MPD will read music files from /srv/Music"
 
 echo "=== Pulseaudio Section ==="
+
 echo "Installing default.pa file"
 cp etc/pulse/default.pa /etc/pulse/default.pa
+echo "Installing system.pa file"
+cp etc/pulse/system.pa /etc/pulse/system.pa
+
+echo "adding pacmd module loader to .profile"
+echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1" >> /home/pi/.profile
 
 echo "done!"
 #[TODO: install the WIRINGPI option with libmpdclient and button controls]
