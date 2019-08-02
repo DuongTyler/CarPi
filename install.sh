@@ -33,10 +33,9 @@ fi
 echo "Installing hostapd.conf to /etc/hostapd/."
 cp etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf
 
-cat "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
+echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
 
 echo "Installing sysctl config, this may overwrite your original sysctl.conf file settings, please check the config after"
-#cat "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 mv /etc/sysctl.conf /etc/sysctl.conf.bak
 cp etc/sysctl.conf /etc/sysctl.conf
 
