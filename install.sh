@@ -60,6 +60,11 @@ echo "MPD will read music files from /srv/Music"
 
 echo "=== Pulseaudio Section ==="
 
+echo "[apt] Installing bluetooth audio module"
+apt -y install pulseaudio-module-bluetooth
+systemctl enable bluetooth
+systemctl start bluetooth
+
 echo "Installing default.pa file"
 cp etc/pulse/default.pa /etc/pulse/default.pa
 echo "Installing system.pa file"
@@ -81,5 +86,5 @@ ExecStart=
 ExecStart=-/sbin/agetty --autologin pi --noclear %I \$TERM
 EOF
 
-echo "done!"
+echo "done!\nPlease restart the system now to ensure all services function properly"
 #[TODO: install the WIRINGPI option with libmpdclient and button controls]
