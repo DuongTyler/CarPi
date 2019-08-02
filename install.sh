@@ -69,5 +69,17 @@ echo "adding pacmd module loader to .profile"
 echo "pulseaudio --start" >> /home/pi/.profile
 echo "pacmd load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1" >> /home/pi/.profile
 
+echo "forcing 3.5mm audio jack output"
+amixer cset numid=3 "1"
+
+echo "setting autologin settings"
+systemctl set-default multi-user.target
+ln -fs /lib/systemd/system/getty@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
+cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf << EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin pi --noclear %I \$TERM
+EOF
+
 echo "done!"
 #[TODO: install the WIRINGPI option with libmpdclient and button controls]
