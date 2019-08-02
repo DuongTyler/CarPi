@@ -5,6 +5,8 @@ if [ $(whoami) != "root" ]; then
 	exit 1
 fi
 
+echo "[apt] Installing pulseaudio"
+apt -y install pulseaudio
 
 echo "=== ACCESS POINT SECTION ==="
 echo "[apt] Installing dnsmasq hostapd"
@@ -59,3 +61,4 @@ echo "Installing default.pa file"
 cp etc/pulse/default.pa /etc/pulse/default.pa
 
 echo "done!"
+#[TODO: install the WIRINGPI option with libmpdclient and button controls]
